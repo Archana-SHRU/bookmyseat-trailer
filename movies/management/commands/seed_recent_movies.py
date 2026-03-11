@@ -23,6 +23,7 @@ class Command(BaseCommand):
                 'Allu Arjun, Rashmika Mandanna',
                 'Action drama sequel',
                 'https://www.youtube.com/watch?v=g3JUbgOHgdw',
+                'https://upload.wikimedia.org/wikipedia/en/1/11/Pushpa_2-_The_Rule.jpg',
                 ['Action', 'Drama'],
                 ['Hindi', 'Telugu'],
             ),
@@ -33,6 +34,7 @@ class Command(BaseCommand):
                 'NTR Jr, Janhvi Kapoor',
                 'Coastal action drama',
                 'https://www.youtube.com/watch?v=rc61YHl1PFY',
+                'https://upload.wikimedia.org/wikipedia/en/f/f0/Devara_Part_1.jpg',
                 ['Action', 'Drama'],
                 ['Telugu', 'Hindi'],
             ),
@@ -43,6 +45,7 @@ class Command(BaseCommand):
                 'Prabhas, Deepika Padukone',
                 'Sci-fi action spectacle',
                 'https://www.youtube.com/watch?v=y1-w1kUGuz8',
+                'https://upload.wikimedia.org/wikipedia/en/4/4c/Kalki_2898_AD.jpg',
                 ['Sci-Fi', 'Action'],
                 ['Hindi', 'Telugu'],
             ),
@@ -53,6 +56,7 @@ class Command(BaseCommand):
                 'Rajkummar Rao, Shraddha Kapoor',
                 'Horror comedy sequel',
                 'https://www.youtube.com/watch?v=KVnheXywIbY',
+                'https://upload.wikimedia.org/wikipedia/en/a/a1/Stree_2.jpg',
                 ['Horror', 'Comedy'],
                 ['Hindi'],
             ),
@@ -63,6 +67,7 @@ class Command(BaseCommand):
                 'Hrithik Roshan, Deepika Padukone',
                 'Aerial action entertainer',
                 'https://www.youtube.com/watch?v=6amIq_mP4xM',
+                'https://upload.wikimedia.org/wikipedia/en/d/df/Fighter_film_teaser.jpg',
                 ['Action', 'Thriller'],
                 ['Hindi'],
             ),
@@ -73,6 +78,7 @@ class Command(BaseCommand):
                 'Robert Downey Jr., Chris Evans',
                 'Superhero team-up blockbuster',
                 'https://www.youtube.com/watch?v=eOrNdBpGMv8',
+                'https://upload.wikimedia.org/wikipedia/en/8/8a/The_Avengers_%282012_film%29_poster.jpg',
                 ['Action', 'Sci-Fi'],
                 ['English'],
             ),
@@ -83,6 +89,7 @@ class Command(BaseCommand):
                 'Robert Downey Jr., Chris Evans',
                 'Epic conclusion to the saga',
                 'https://www.youtube.com/watch?v=TcMBFSGVi1c',
+                'https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg',
                 ['Action', 'Sci-Fi'],
                 ['English'],
             ),
@@ -93,6 +100,7 @@ class Command(BaseCommand):
                 'Leonardo DiCaprio, Joseph Gordon-Levitt',
                 'Mind-bending heist thriller',
                 'https://www.youtube.com/watch?v=YoHD9XEInc0',
+                'https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg',
                 ['Sci-Fi', 'Thriller'],
                 ['English'],
             ),
@@ -103,6 +111,7 @@ class Command(BaseCommand):
                 'Matthew McConaughey, Anne Hathaway',
                 'Space exploration drama',
                 'https://www.youtube.com/watch?v=zSWdZVtXT7E',
+                'https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg',
                 ['Sci-Fi', 'Drama'],
                 ['English'],
             ),
@@ -113,6 +122,7 @@ class Command(BaseCommand):
                 'Joaquin Phoenix, Robert De Niro',
                 'Psychological character study',
                 'https://www.youtube.com/watch?v=zAGVQLHvwOY',
+                'https://upload.wikimedia.org/wikipedia/en/e/e1/Joker_%282019_film%29_poster.jpg',
                 ['Drama', 'Thriller'],
                 ['English'],
             ),
@@ -123,6 +133,7 @@ class Command(BaseCommand):
                 'Tom Holland, Zendaya',
                 'Superhero coming-of-age',
                 'https://www.youtube.com/watch?v=JfVOs4VSpmA',
+                'https://upload.wikimedia.org/wikipedia/en/0/00/Spider-Man_No_Way_Home_poster.jpg',
                 ['Action', 'Sci-Fi'],
                 ['English'],
             ),
@@ -133,6 +144,7 @@ class Command(BaseCommand):
                 'Cillian Murphy, Emily Blunt',
                 'Biographical drama',
                 'https://www.youtube.com/watch?v=uYPbbksJxIg',
+                'https://upload.wikimedia.org/wikipedia/en/4/4a/Oppenheimer_%28film%29.jpg',
                 ['Drama', 'Thriller'],
                 ['English'],
             ),
@@ -143,6 +155,7 @@ class Command(BaseCommand):
                 'Timothee Chalamet, Zendaya',
                 'Epic sci-fi saga',
                 'https://www.youtube.com/watch?v=n9xhJrPXop4',
+                'https://upload.wikimedia.org/wikipedia/en/a/a6/Dune_%282021_film%29.jpg',
                 ['Sci-Fi', 'Adventure'],
                 ['English'],
             ),
@@ -153,6 +166,7 @@ class Command(BaseCommand):
                 'Christian Bale, Heath Ledger',
                 'Iconic superhero thriller',
                 'https://www.youtube.com/watch?v=EXeTwQWrcwY',
+                'https://upload.wikimedia.org/wikipedia/en/8/8a/Dark_Knight.jpg',
                 ['Action', 'Thriller'],
                 ['English'],
             ),
@@ -163,6 +177,7 @@ class Command(BaseCommand):
                 'Leonardo DiCaprio, Kate Winslet',
                 'Epic romance',
                 'https://www.youtube.com/watch?v=kVrqfYjkTdQ',
+                'https://upload.wikimedia.org/wikipedia/en/2/22/Titanic_poster.jpg',
                 ['Drama', 'Romance'],
                 ['English'],
             ),
@@ -173,6 +188,7 @@ class Command(BaseCommand):
                 'Sam Worthington, Zoe Saldana',
                 'Sci-fi adventure',
                 'https://www.youtube.com/watch?v=5PSNL1qE6VY',
+                'https://upload.wikimedia.org/wikipedia/en/b/b0/Avatar-Teaser-Poster.jpg',
                 ['Sci-Fi', 'Adventure'],
                 ['English'],
             ),
@@ -183,6 +199,7 @@ class Command(BaseCommand):
                 'Prabhas, Rana Daggubati',
                 'Epic action drama',
                 'https://www.youtube.com/watch?v=sOEg_YZQsTI',
+                'https://upload.wikimedia.org/wikipedia/en/7/7e/Baahubali_The_Beginning_poster.jpg',
                 ['Action', 'Drama'],
                 ['Telugu', 'Hindi'],
             ),
@@ -193,6 +210,7 @@ class Command(BaseCommand):
                 'Prabhas, Anushka Shetty',
                 'Epic conclusion',
                 'https://www.youtube.com/watch?v=G62HrubdD6o',
+                'https://upload.wikimedia.org/wikipedia/en/f/f9/Baahubali_the_Conclusion.jpg',
                 ['Action', 'Drama'],
                 ['Telugu', 'Hindi'],
             ),
@@ -203,6 +221,7 @@ class Command(BaseCommand):
                 'NTR Jr, Ram Charan',
                 'Action drama spectacle',
                 'https://www.youtube.com/watch?v=NgBoMJy386M',
+                'https://upload.wikimedia.org/wikipedia/en/d/d7/RRR_Poster.jpg',
                 ['Action', 'Drama'],
                 ['Telugu', 'Hindi'],
             ),
@@ -213,6 +232,7 @@ class Command(BaseCommand):
                 'Yash, Srinidhi Shetty',
                 'Action crime drama',
                 'https://www.youtube.com/watch?v=-KfsY-qwBS0',
+                'https://upload.wikimedia.org/wikipedia/en/c/ca/K.G.F_Chapter_1_poster.jpg',
                 ['Action', 'Thriller'],
                 ['Hindi'],
             ),
@@ -223,13 +243,14 @@ class Command(BaseCommand):
                 'Yash, Sanjay Dutt',
                 'Sequel action drama',
                 'https://www.youtube.com/watch?v=Qah9sSIXJqk',
+                'https://upload.wikimedia.org/wikipedia/en/5/5f/KGF_Chapter_2_poster.jpg',
                 ['Action', 'Thriller'],
                 ['Hindi'],
             ),
         ]
 
         created_movies = 0
-        for idx, (name, image, rating, cast, description, trailer_url, genres, languages) in enumerate(movies_data, start=1):
+        for idx, (name, image, rating, cast, description, trailer_url, poster_url, genres, languages) in enumerate(movies_data, start=1):
             movie, created = Movie.objects.get_or_create(
                 name=name,
                 defaults={
@@ -238,6 +259,7 @@ class Command(BaseCommand):
                     'cast': cast,
                     'description': description,
                     'trailer_url': trailer_url,
+                    'metadata': {'poster_url': poster_url},
                 },
             )
             if not created:
@@ -246,7 +268,10 @@ class Command(BaseCommand):
                 movie.cast = cast
                 movie.description = description
                 movie.trailer_url = trailer_url
-                movie.save(update_fields=['image', 'rating', 'cast', 'description', 'trailer_url'])
+                metadata = movie.metadata or {}
+                metadata['poster_url'] = poster_url
+                movie.metadata = metadata
+                movie.save(update_fields=['image', 'rating', 'cast', 'description', 'trailer_url', 'metadata'])
             else:
                 created_movies += 1
 

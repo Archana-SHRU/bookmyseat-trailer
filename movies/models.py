@@ -61,6 +61,9 @@ class Movie(models.Model):
 
     @property
     def poster_url(self):
+        metadata_url = (self.metadata or {}).get('poster_url')
+        if metadata_url:
+            return metadata_url
         mapped_url = self.POSTER_URLS.get(self.name.strip().lower())
         if mapped_url:
             return mapped_url
