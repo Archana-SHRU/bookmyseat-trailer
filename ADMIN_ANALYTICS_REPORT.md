@@ -16,8 +16,12 @@
 - Unauthorized API calls return `401`/`403`.
 
 ## Admin Credentials Used for Demo
-- Username: `<fill_here>`
-- Password: `<fill_here>`
+- Username: `analytics_admin`
+- Email: `aniruddhaa719@gmail.com`
+- Password: `ani2006`
+
+To create or reset this user locally:
+- `python manage.py seed_admin_analytics_user --reset-password`
 
 Note: Passwords are stored by Django using one-way password hashing in the auth table, not in plaintext.
 

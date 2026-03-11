@@ -7,7 +7,7 @@
   class="trailer-block"
 >
   {% if trailer_video_id %}
-    <div data-trailer-placeholder>
+    <div data-trailer-placeholder style="text-align: center;">
       <button type="button" data-trailer-play class="btn btn-danger mb-3" aria-label="Play trailer for {{ movie.name|default:'this movie' }}">
         Play Trailer
       </button>
@@ -21,8 +21,7 @@
           src="{{ movie.poster_url }}"
           alt="{{ movie.name|default:'Movie' }} poster"
           loading="lazy"
-          width="100%"
-          style="max-width: 640px; border-radius: 8px; max-height: 420px; object-fit: cover;"
+          style="display: inline-block; max-width: 100%; border-radius: 8px; max-height: 420px; object-fit: contain; background-color: transparent;"
         />
       </div>
     </div>

@@ -14,7 +14,7 @@
     <div class="col-md-3 col-sm-6 mb-4">
       <a href="{% url 'theater_list' movie.id %}" class="text-decoration-none text-dark">
         <div class="card h-100 shadow-sm">
-          <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.name }}" style="height: 320px; object-fit: cover;" />
+          <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.name }}" style="height: 320px; object-fit: contain; background-color: #f4f4f4;" />
           <div class="card-body">
             <h5 class="card-title">{{ movie.name }}</h5>
             <p class="mb-1"><i class="fas fa-star text-warning"></i> {{ movie.rating }}</p>
