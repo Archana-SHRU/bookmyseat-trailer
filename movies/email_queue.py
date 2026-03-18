@@ -28,13 +28,25 @@ def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
         'booked_at': timezone.now().isoformat(),
     }
 
-    task, _ = EmailDeliveryTask.objects.get_or_create(
+    task, created = EmailDeliveryTask.objects.get_or_create(
         payment=payment,
         defaults={
             'recipient_email': payment.user.email,
             'context': context,
         },
     )
+    if not created:
+        task.recipient_email = payment.user.email
+        task.context = context
+        task.save(update_fields=['recipient_email', 'context', 'updated_at'])
+    return task
+
+
+def send_booking_confirmation_email(payment: Payment, seat_numbers):
+    task = enqueue_booking_confirmation_email(payment, seat_numbers)
+    if not task:
+        return None
+    process_single_email_task(task)
     return task
 
 

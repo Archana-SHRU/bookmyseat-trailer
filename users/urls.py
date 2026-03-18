@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path
 from .views import register, login_view, profile, reset_password, home
 from django.contrib.auth import views as auth_views
@@ -14,7 +15,13 @@ urlpatterns = [
     path('reset-password/', reset_password, name='reset-password'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('password-reset/',
-         auth_views.PasswordResetView.as_view(template_name='users/reset_password.html'),
+         auth_views.PasswordResetView.as_view(
+             template_name='users/reset_password.html',
+             email_template_name='emails/password_reset.txt',
+             subject_template_name='emails/password_reset_subject.txt',
+             html_email_template_name='emails/password_reset.html',
+             from_email=settings.DEFAULT_FROM_EMAIL,
+         ),
          name='password_reset'),
     path('password-reset/done/',
          auth_views.PasswordResetDoneView.as_view(template_name='users/password_reset_done.html'),

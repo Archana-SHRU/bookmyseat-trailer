@@ -397,7 +397,9 @@ class BookingEmailQueueTests(TransactionTestCase):
         )
         self.assertTrue(ok)
         payment.refresh_from_db()
-        self.assertEqual(payment.email_task.status, 'pending')
+        self.assertEqual(payment.email_task.status, 'sent')
+        self.assertEqual(payment.email_task.recipient_email, self.user.email)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_email_task_retry_and_success(self):
         from movies.email_queue import enqueue_booking_confirmation_email

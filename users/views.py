@@ -1,9 +1,17 @@
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from .forms import UserRegisterForm, UserUpdateForm
-from django.shortcuts import render,redirect
-from django.contrib.auth import login,authenticate
+import logging
+
+from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from movies.models import Movie , Booking
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+
+from .forms import UserRegisterForm, UserUpdateForm
+from movies.models import Booking, Movie
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     movies= Movie.objects.all()
@@ -52,7 +60,33 @@ def reset_password(request):
         form=PasswordChangeForm(user=request.user,data=request.POST)
         if form.is_valid():
             form.save()
+            _send_password_change_email(request.user)
             return redirect('login')
     else:
         form=PasswordChangeForm(user=request.user)
     return render(request,'users/reset_password.html',{'form':form})
+
+
+def _send_password_change_email(user):
+    if not user.email:
+        return
+
+    context = {
+        'username': user.get_username(),
+        'email': user.email,
+        'site_name': 'BookMySeat',
+    }
+    try:
+        subject = render_to_string('emails/password_changed_subject.txt', context).strip()
+        text_body = render_to_string('emails/password_changed.txt', context)
+        html_body = render_to_string('emails/password_changed.html', context)
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
+        )
+        message.attach_alternative(html_body, 'text/html')
+        message.send()
+    except Exception:
+        logger.exception('Password change email failed for user_id=%s', user.id)
