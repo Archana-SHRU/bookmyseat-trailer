@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
@@ -8,7 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
-from .forms import UserRegisterForm, UserUpdateForm
+from .forms import UserPasswordResetForm, UserRegisterForm, UserUpdateForm
 from movies.models import Booking, Movie
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,29 @@ def login_view(request):
     else:
         form=AuthenticationForm()
     return render(request,'users/login.html',{'form':form})
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        form = UserPasswordResetForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save(
+                    request=request,
+                    use_https=request.is_secure(),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    email_template_name='emails/password_reset.txt',
+                    subject_template_name='emails/password_reset_subject.txt',
+                    html_email_template_name='emails/password_reset.html',
+                )
+                messages.success(request, 'Password reset email sent. Please check your inbox.')
+                return redirect('password_reset_done')
+            except Exception:
+                logger.exception('Password reset email failed for email=%s', form.cleaned_data.get('email'))
+                messages.error(request, 'Password reset email could not be sent right now. Please try again.')
+    else:
+        form = UserPasswordResetForm()
+    return render(request, 'users/reset_password.html', {'form': form})
 
 @login_required
 def profile(request):

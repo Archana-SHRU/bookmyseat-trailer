@@ -40,16 +40,6 @@ def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
         task.context = context
         task.save(update_fields=['recipient_email', 'context', 'updated_at'])
     return task
-
-
-def send_booking_confirmation_email(payment: Payment, seat_numbers):
-    task = enqueue_booking_confirmation_email(payment, seat_numbers)
-    if not task:
-        return None
-    process_single_email_task(task)
-    return task
-
-
 def _build_email_message(task: EmailDeliveryTask):
     context = dict(task.context)
     subject = render_to_string('emails/booking_confirmation_subject.txt', context).strip()
