@@ -11,12 +11,8 @@ from .models import EmailDeliveryTask, Payment
 logger = logging.getLogger('movies.email')
 
 
-def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
-    if not payment.user.email:
-        logger.warning('Skipping confirmation email: missing user email for payment_id=%s', payment.id)
-        return None
-
-    context = {
+def _build_booking_context(payment: Payment, seat_numbers):
+    return {
         'username': payment.user.username,
         'movie_name': payment.movie.name,
         'theater_name': payment.theater.name,
@@ -27,6 +23,31 @@ def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
         'amount_inr': payment.amount_paise / 100,
         'booked_at': timezone.now().isoformat(),
     }
+
+
+def _build_direct_booking_message(payment: Payment, seat_numbers):
+    context = _build_booking_context(payment, seat_numbers)
+    subject = render_to_string('emails/booking_confirmation_subject.txt', context).strip()
+    text_body = render_to_string('emails/booking_confirmation.txt', context)
+    html_body = render_to_string('emails/booking_confirmation.html', context)
+
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@bookmyseat.local')
+    message = EmailMultiAlternatives(
+        subject=subject,
+        body=text_body,
+        from_email=from_email,
+        to=[payment.user.email],
+    )
+    message.attach_alternative(html_body, 'text/html')
+    return message
+
+
+def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
+    if not payment.user.email:
+        logger.warning('Skipping confirmation email: missing user email for payment_id=%s', payment.id)
+        return None
+
+    context = _build_booking_context(payment, seat_numbers)
 
     task, created = EmailDeliveryTask.objects.get_or_create(
         payment=payment,
@@ -43,11 +64,31 @@ def enqueue_booking_confirmation_email(payment: Payment, seat_numbers):
 
 
 def send_booking_confirmation_email(payment: Payment, seat_numbers):
-    task = enqueue_booking_confirmation_email(payment, seat_numbers)
-    if not task:
+    if not payment.user.email:
+        logger.warning('Skipping confirmation email: missing user email for payment_id=%s', payment.id)
         return None
-    process_single_email_task(task)
+
+    try:
+        message = _build_direct_booking_message(payment, seat_numbers)
+        message.send(fail_silently=False)
+        logger.info('Booking email sent synchronously for payment_id=%s', payment.id)
+    except Exception:
+        logger.exception('Synchronous booking email failed for payment_id=%s', payment.id)
+        task = enqueue_booking_confirmation_email(payment, seat_numbers)
+        if task:
+            process_single_email_task(task)
+        return task
+
+    task = enqueue_booking_confirmation_email(payment, seat_numbers)
+    if task and task.status != EmailDeliveryTask.STATUS_SENT:
+        task.status = EmailDeliveryTask.STATUS_SENT
+        task.last_error = ''
+        task.sent_at = timezone.now()
+        task.next_attempt_at = timezone.now()
+        task.save(update_fields=['status', 'last_error', 'sent_at', 'next_attempt_at', 'updated_at'])
     return task
+
+
 def _build_email_message(task: EmailDeliveryTask):
     context = dict(task.context)
     subject = render_to_string('emails/booking_confirmation_subject.txt', context).strip()
