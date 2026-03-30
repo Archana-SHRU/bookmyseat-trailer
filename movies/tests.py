@@ -1,7 +1,12 @@
+import hashlib
+import hmac
+import json
 from datetime import timedelta
+from io import StringIO
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.management import call_command
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, TransactionTestCase, override_settings
@@ -10,7 +15,7 @@ from django.utils import timezone
 from unittest.mock import patch
 
 from movies.email_queue import process_single_email_task
-from movies.models import Booking, Genre, Language, Movie, Payment, Seat, Theater
+from movies.models import Booking, Genre, Language, Movie, Payment, PaymentWebhookEvent, Seat, Theater
 from movies.seat_locking import acquire_seat_locks, release_expired_seat_locks
 from movies.views import _lock_and_finalize_payment
 
@@ -56,6 +61,19 @@ class SeatLockingTests(TransactionTestCase):
         self.assertEqual(released, 1)
         self.assertIsNone(self.seat.locked_by)
         self.assertIsNone(self.seat.lock_expires_at)
+
+    def test_release_expired_reservations_command_releases_lock_without_refresh(self):
+        self.seat.locked_by = self.user_one
+        self.seat.lock_expires_at = timezone.now() - timedelta(seconds=5)
+        self.seat.save(update_fields=['locked_by', 'lock_expires_at'])
+
+        stdout = StringIO()
+        call_command('release_expired_reservations', '--run-once', stdout=stdout)
+
+        self.seat.refresh_from_db()
+        self.assertIsNone(self.seat.locked_by)
+        self.assertIsNone(self.seat.lock_expires_at)
+        self.assertIn('released_expired_seat_locks=1', stdout.getvalue())
 
     def test_payment_finalization_requires_valid_user_lock(self):
         payment = Payment.objects.create(
@@ -431,3 +449,101 @@ class BookingEmailQueueTests(TransactionTestCase):
         task.refresh_from_db()
         self.assertEqual(task.status, 'sent')
         self.assertEqual(len(mail.outbox), 1)
+
+
+@override_settings(RAZORPAY_WEBHOOK_SECRET='test_webhook_secret')
+class RazorpayWebhookTests(TransactionTestCase):
+    reset_sequences = True
+
+    def setUp(self):
+        image = SimpleUploadedFile('poster.jpg', b'filecontent', content_type='image/jpeg')
+        self.movie = Movie.objects.create(
+            name='Webhook Test Movie',
+            image=image,
+            rating='8.4',
+            cast='Actor 1, Actor 2',
+            description='Webhook movie',
+        )
+        self.theater = Theater.objects.create(
+            name='Webhook Theater',
+            movie=self.movie,
+            show_time=timezone.now() + timedelta(hours=1),
+        )
+        self.user = User.objects.create_user(username='webhook_user', password='pass12345', email='webhook@test.local')
+        self.seat = Seat.objects.create(theater=self.theater, seat_number='A1')
+        self.payment = Payment.objects.create(
+            user=self.user,
+            movie=self.movie,
+            theater=self.theater,
+            seat_ids=[self.seat.id],
+            amount_paise=20000,
+            status=Payment.STATUS_PENDING,
+            razorpay_order_id='order_webhook_1',
+            expires_at=timezone.now() + timedelta(minutes=2),
+        )
+        self.seat.locked_by = self.user
+        self.seat.lock_expires_at = timezone.now() + timedelta(minutes=2)
+        self.seat.save(update_fields=['locked_by', 'lock_expires_at'])
+        self.client = Client()
+
+    def _signed_post(self, payload, event_id='evt_1', signature_secret='test_webhook_secret'):
+        body = json.dumps(payload).encode('utf-8')
+        signature = hmac.new(signature_secret.encode('utf-8'), body, hashlib.sha256).hexdigest()
+        return self.client.post(
+            reverse('razorpay_webhook'),
+            data=body,
+            content_type='application/json',
+            HTTP_X_RAZORPAY_SIGNATURE=signature,
+            HTTP_X_RAZORPAY_EVENT_ID=event_id,
+        )
+
+    def test_captured_webhook_is_idempotent_and_duplicate_event_is_ignored(self):
+        payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_webhook_1',
+                        'order_id': 'order_webhook_1',
+                        'status': 'captured',
+                    }
+                }
+            },
+        }
+
+        first = self._signed_post(payload, event_id='evt_duplicate')
+        second = self._signed_post(payload, event_id='evt_duplicate')
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(second.json()['status'], 'duplicate_ignored')
+
+        self.payment.refresh_from_db()
+        self.seat.refresh_from_db()
+        self.assertEqual(self.payment.status, Payment.STATUS_PAID)
+        self.assertTrue(self.seat.is_booked)
+        self.assertEqual(Booking.objects.filter(seat=self.seat).count(), 1)
+        self.assertEqual(PaymentWebhookEvent.objects.filter(provider_event_id='evt_duplicate').count(), 1)
+
+    def test_invalid_webhook_signature_is_rejected(self):
+        payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_webhook_bad',
+                        'order_id': 'order_webhook_1',
+                        'status': 'captured',
+                    }
+                }
+            },
+        }
+
+        response = self._signed_post(payload, event_id='evt_bad_signature', signature_secret='wrong_secret')
+
+        self.assertEqual(response.status_code, 400)
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status, Payment.STATUS_PENDING)
+        self.assertEqual(PaymentWebhookEvent.objects.count(), 0)
+
+

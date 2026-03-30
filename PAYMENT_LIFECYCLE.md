@@ -78,9 +78,10 @@
 - Endpoint validates current user ownership and lock validity for all seats.
 - If lock expires or becomes invalid on another device/session, frontend disables pay action and redirects user back to seat selection.
 
-## 13. Automated Booking Confirmation Email (Async + Retry)
-- After payment is finalized as `paid`, server enqueues one `EmailDeliveryTask` (1:1 with payment) in DB via `transaction.on_commit`.
-- Booking API response is not blocked by SMTP call; delivery is handled by background worker:
+## 13. Automated Booking Confirmation Email (Direct Send + Retry Fallback)
+- After payment is finalized as `paid`, the server triggers booking confirmation delivery in `transaction.on_commit(...)`.
+- Primary path: send immediately using the configured Django email backend.
+- Fallback path: if direct SMTP delivery fails, one `EmailDeliveryTask` (1:1 with payment) is persisted and can be retried by background worker:
   - `python manage.py process_email_queue --interval 10`
   - Or one-shot: `python manage.py process_email_queue --once`
 - Email content uses Django template engine:
