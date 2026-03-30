@@ -489,6 +489,7 @@ def payment_checkout(request):
             'payment_idempotency_key': payment.idempotency_key,
             'payment_expires_at': payment.expires_at,
             'payment_mock_mode': payment_mock_mode,
+            'razorpay_test_mode': settings.RAZORPAY_KEY_ID.startswith('rzp_test_'),
         },
     )
 
@@ -743,5 +744,6 @@ def razorpay_webhook(request):
         payment.save(update_fields=['gateway_status', 'verification_source', 'provider_signature_verified', 'updated_at'])
 
     return JsonResponse({'status': 'ok'})
+
 
 

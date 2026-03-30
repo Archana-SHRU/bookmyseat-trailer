@@ -3,9 +3,9 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 
 
-DEFAULT_USERNAME = 'analytics_admin'
-DEFAULT_PASSWORD = 'ani2006'
-DEFAULT_EMAIL = 'aniruddhaa719@gmail.com'
+DEFAULT_USERNAME = 'archana_admin'
+DEFAULT_PASSWORD = 'ChangeMe123!'
+DEFAULT_EMAIL = 'admin@example.com'
 
 
 class Command(BaseCommand):
