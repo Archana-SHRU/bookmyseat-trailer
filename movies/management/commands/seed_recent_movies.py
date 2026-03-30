@@ -173,6 +173,8 @@ class Command(BaseCommand):
             ),
         ]
 
+        Theater.objects.filter(show_time__lt=timezone.now()).delete()
+
         created_movies = 0
         for idx, (name, image, rating, cast, description, trailer_url, poster_url, genres, languages) in enumerate(movies_data, start=1):
             movie, created = Movie.objects.get_or_create(
@@ -247,4 +249,5 @@ class Command(BaseCommand):
         for movie_name, trailer_url in trailer_backfill.items():
             Movie.objects.filter(name=movie_name).update(trailer_url=trailer_url)
         self.stdout.write(self.style.SUCCESS(f'Recent movies seeded. Created new movies: {created_movies}'))
+
 
