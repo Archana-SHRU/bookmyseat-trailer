@@ -45,6 +45,30 @@ def _apply_movie_filters(queryset, search_query='', genre_ids=None, language_ids
     return queryset
 
 
+
+def _build_seat_selection_context(theater, seats, user, now, error=''):
+    available_count = 0
+    booked_count = 0
+    locked_count = 0
+
+    for seat in seats:
+        if seat.is_booked:
+            booked_count += 1
+        elif seat.locked_by and seat.locked_by != user and seat.lock_expires_at and seat.lock_expires_at > now:
+            locked_count += 1
+        else:
+            available_count += 1
+
+    return {
+        'theaters': theater,
+        'seats': seats,
+        'now': now,
+        'error': error,
+        'available_count': available_count,
+        'booked_count': booked_count,
+        'locked_count': locked_count,
+        'total_seats': len(seats),
+    }
 def movie_list(request):
     search_query = (request.GET.get('search') or '').strip()
     selected_genre_ids = _parse_multi_select_ints(request.GET.getlist('genres'))
@@ -744,6 +768,7 @@ def razorpay_webhook(request):
         payment.save(update_fields=['gateway_status', 'verification_source', 'provider_signature_verified', 'updated_at'])
 
     return JsonResponse({'status': 'ok'})
+
 
 
 

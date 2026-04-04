@@ -12,7 +12,7 @@
               <small class="text-muted">Availability shown below is only for this selected show.</small>
             </div>
             <div class="text-sm-end">
-              <div><span class="badge text-bg-dark me-2 mb-2">Screen {{ theaters.name }}</span><span class="badge text-bg-success mb-2">{{ seats|length }} Total Seats</span></div>
+              <div><span class="badge text-bg-dark me-2 mb-2">Screen {{ theaters.name }}</span><span class="badge text-bg-success me-2 mb-2">{{ available_count }} Available</span><span class="badge text-bg-secondary me-2 mb-2">{{ booked_count }} Booked</span><span class="badge text-bg-danger mb-2">{{ locked_count }} Locked</span></div>
             </div>
           </div>
         </div>
@@ -144,4 +144,5 @@
   }
 </style>
 {% endblock %}
+
 
